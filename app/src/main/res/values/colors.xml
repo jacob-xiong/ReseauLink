@@ -7,4 +7,5 @@
     <color name="main_bg">#F7F7F7</color>
     <color name="action_bar_lin">#ffeaecee</color>
     <color name="action_bar_bg">#eeeeee</color>
+    <color name="selected_list_divider">#DAD9DB</color>
 </resources>

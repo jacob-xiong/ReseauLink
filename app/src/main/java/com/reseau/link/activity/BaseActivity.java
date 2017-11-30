@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewStub;
@@ -12,11 +13,13 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.lzy.imagepicker.ImagePicker;
 import com.reseau.link.R;
+import com.reseau.link.mvp.presenter.BasePresenter;
 import com.reseau.link.utils.MyToast;
+import com.reseau.link.utils.image.MyImgPicker;
 
 import butterknife.ButterKnife;
-import com.reseau.link.mvp.presenter.BasePresenter;
 
 /**
  * @author xiongyan
@@ -24,7 +27,7 @@ import com.reseau.link.mvp.presenter.BasePresenter;
  * 基类Activity
  */
 
-public abstract class BaseActivity <T extends BasePresenter>extends Activity implements View.OnClickListener, Handler.Callback {
+public abstract class BaseActivity<T extends BasePresenter> extends FragmentActivity implements View.OnClickListener, Handler.Callback {
     protected LayoutInflater mInflater;
     protected Context mContext;
     private View mActionView;
@@ -36,6 +39,8 @@ public abstract class BaseActivity <T extends BasePresenter>extends Activity imp
     private String DRAWABLE_TYPE = "drawable";
     private String STRING_TYPE = "string";
     protected T presenter;
+    ImagePicker imagePicker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +54,16 @@ public abstract class BaseActivity <T extends BasePresenter>extends Activity imp
         setContentView(R.layout.base_activity);
         initIntent();
         initLayout();
+        initImagePick();
         ButterKnife.bind(this);
         initPresenter();
         initView();
         initActionBarTitle();
         loadData();
+    }
+
+    private void initImagePick() {
+        imagePicker = MyImgPicker.getImagePicker();
     }
 
     /**

@@ -18,6 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.graphics.Bitmap.Config.RGB_565;
 
@@ -27,6 +29,7 @@ import static android.graphics.Bitmap.Config.RGB_565;
  */
 
 public class ImgUtils {
+
 
     /**
      * 四个步奏 ：
@@ -161,8 +164,9 @@ public class ImgUtils {
         } else if (w < h && h > hh) { // 如果高度高的话根据高度固定大小缩放
             be = (int) (newOpts.outHeight / hh);
         }
-        if (be <= 0)
+        if (be <= 0) {
             be = 1;
+        }
         newOpts.inSampleSize = be; // 设置缩放比例
         // newOpts.inPreferredConfig = Config.RGB_565;//降低图片从ARGB888到RGB565
 
@@ -235,7 +239,9 @@ public class ImgUtils {
         } else if (w < h && h > hh) {//如果高度高的话根据宽度固定大小缩放
             be = (int) (newOpts.outHeight / hh);
         }
-        if (be <= 0) be = 1;
+        if (be <= 0) {
+            be = 1;
+        }
         newOpts.inSampleSize = be;//设置缩放比例
         // 开始压缩图片，注意此时已经把options.inJustDecodeBounds 设回false了
         bitmap = BitmapFactory.decodeFile(imgPath, newOpts);
@@ -407,7 +413,8 @@ public class ImgUtils {
 
         return imageUri;
     }
-    public static  File createImageFile(Activity mActivity) throws IOException {
+
+    public static File createImageFile(Activity mActivity) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp;//创建以时间命名的文件名称
         File storageDir = getOwnCacheDirectory(mActivity, "ReseauLink");//创建保存的路径
@@ -425,6 +432,7 @@ public class ImgUtils {
 
     /**
      * 根据目录创建文件夹
+     *
      * @param context
      * @param cacheDir
      * @return
@@ -432,7 +440,7 @@ public class ImgUtils {
     public static File getOwnCacheDirectory(Context context, String cacheDir) {
         File appCacheDir = null;
         //判断sd卡正常挂载并且拥有权限的时候创建文件
-        if ( Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) && hasExternalStoragePermission(context)) {
             appCacheDir = new File(Environment.getExternalStorageDirectory(), cacheDir);
         }
         if (appCacheDir == null || !appCacheDir.exists() && !appCacheDir.mkdirs()) {
@@ -444,12 +452,31 @@ public class ImgUtils {
 
     /**
      * 检查是否有权限
+     *
      * @param context
      * @return
      */
     private static boolean hasExternalStoragePermission(Context context) {
         int perm = context.checkCallingOrSelfPermission("android.permission.WRITE_EXTERNAL_STORAGE");
         return perm == 0;
+    }
+
+    /**
+     * 获取图片原始大小
+     * @param path
+     * @return
+     */
+    public static Map<String, Integer> getImgSize(String path) {
+        Map<String, Integer> sizeMap = new HashMap<>();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;//这个参数设置为true才有效，
+        Bitmap bmp = BitmapFactory.decodeFile(path, options);//这里的bitmap是个空
+        int outHeight = options.outHeight;
+        int outWidth = options.outWidth;
+        sizeMap.put(Constant.MAP_SIZE_WIDTH, outWidth);
+        sizeMap.put(Constant.MAP_SIZE_HEIGHT, outHeight);
+
+        return sizeMap;
     }
 
 }

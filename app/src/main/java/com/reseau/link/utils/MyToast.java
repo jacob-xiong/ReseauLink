@@ -5,7 +5,7 @@ import android.widget.Toast;
 
 /**
  * @author by xiongyan on 2017/11/20.
- * Toast 统一管理类
+ *         Toast 统一管理类
  */
 
 public class MyToast {
@@ -23,6 +23,19 @@ public class MyToast {
      * @param message
      */
     public static void showShort(Context context, CharSequence message) {
+        if (isShow) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    /**
+     * 短时间显示Toast
+     *
+     * @param context
+     * @param message
+     */
+    public static void showShort(Context context, String message) {
         if (isShow) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         }
