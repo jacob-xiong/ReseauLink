@@ -53,7 +53,8 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
     TextView mSelectedPath;
     @BindView(R.id.selected_img_view)
     LinearLayout mSelectedImgView;
-    ArrayList<ImageItem> imageItemArrayList = null;
+    ArrayList<ImageItem> selectedItemArrayList = null;
+    ArrayList<ImageItem> images = null;
     private String[] array;
     private SelectedDialogFragment selectedDialogFragment;
 
@@ -78,6 +79,7 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
         LoadImageUtil.load(this, URL, demoImg);
         array = getResources().getStringArray(R.array.selected_media_array);
         selectedDialogFragment = new SelectedDialogFragment();
+        selectedItemArrayList = new ArrayList<>();
 
     }
 
@@ -139,16 +141,19 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
         switch (requestCode) {
             case REQUEST_PICTURE:
                 if (data != null && resultCode == ImagePicker.RESULT_CODE_ITEMS) {
-                    imageItemArrayList = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
+                    images = (ArrayList<ImageItem>) data.getSerializableExtra(ImagePicker.EXTRA_RESULT_ITEMS);
                     Map sizeMap;
                     int size = mSelectedImgView.getWidth() / 3;
-                    for (ImageItem item : imageItemArrayList) {
+                    if (images != null) {
+                        selectedItemArrayList.addAll(images);
+                    }
+                    for (ImageItem item : selectedItemArrayList) {
                         sizeMap = ImgUtils.getImgSize(item.path);
                         ImageView imageView = new ImageView(this);
                         AbsListView.LayoutParams params = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, size);
                         imageView.setLayoutParams(params);
                         imageView.setBackgroundColor(Color.parseColor("#00000000"));
-                        imagePicker.getImageLoader().displayImage(this, imageItemArrayList.get(0).path, imageView, size, size);
+                        imagePicker.getImageLoader().displayImage(this, item.path, imageView, size, size);
                         mSelectedImgView.addView(imageView);
                     }
                     setSelectedPathStr("");
@@ -253,9 +258,8 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
     private void openPhotoAlbum() {
         imagePicker.setMultiMode(true);
         Intent intent = new Intent(TestActivity.this, ImageGridActivity.class);
-        if (imageItemArrayList != null && imageItemArrayList.size() != 0) {
-            imagePicker.setSelectLimit(Constant.MAX_COUNT - imageItemArrayList.size());
-            intent.putExtra(Constant.EXTRAS_IMAGES, imageItemArrayList);
+        if (images != null) {
+            intent.putExtra(Constant.EXTRAS_IMAGES, images);
         }
         startActivityForResult(intent, REQUEST_PICTURE);
     }
@@ -272,7 +276,7 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
     private void setSelectedPathStr(String path) {
         String str = "还未选择文件";
         if (TextUtils.isEmpty(path)) {
-            for (ImageItem item : imageItemArrayList) {
+            for (ImageItem item : selectedItemArrayList) {
                 str = item.path + "\n";
             }
         } else {

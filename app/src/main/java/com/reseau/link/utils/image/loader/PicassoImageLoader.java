@@ -29,6 +29,16 @@ public class PicassoImageLoader implements ImageLoader {
     }
 
     @Override
+    public void displayImagePreview(Activity activity, String path, ImageView imageView, int width, int height) {
+        Picasso.with(activity)
+                .load(Uri.fromFile(new File(path)))
+                .resize(width, height)
+                .centerInside()
+                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                .into(imageView);
+    }
+
+    @Override
     public void clearMemoryCache() {
 
     }
