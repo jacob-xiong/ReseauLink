@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class NetWorkClient {
-    public static final String API_VERSION = "v1.0.0";
+
     public static ApiService getApiService() {
         return new Retrofit.Builder()
                 .baseUrl(ApiHost.getUrlTest())
@@ -39,7 +39,6 @@ public class NetWorkClient {
     }
 
 
-
     private static Gson getDefaultGson() {
         return new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -56,9 +55,9 @@ public class NetWorkClient {
                         Request.Builder requestBuilder = original.newBuilder()
 //                                .addHeader("token", User.getLoginToken())
 //                                .addHeader("station", User.getStationCode())
-                                .addHeader("os", Config.SYSTEM_OS)
-                                .addHeader("versionNum",Config.VERSION_CODE + "0")
-                                .addHeader("version", API_VERSION);
+                                .addHeader(Config.OS_KEY, Config.SYSTEM_OS)
+                                .addHeader(Config.VERSION_NUM_KEY, Config.VERSION_CODE + "0")
+                                .addHeader(Config.VERSION_KEY, Config.API_VERSION);
                         Request request = requestBuilder.build();
                         return chain.proceed(request);
                     }

@@ -36,6 +36,18 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"></LinearLayout>
 
+        <Button
+            android:id="@+id/up_load_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp12"
+            android:text="上传文件" />
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp12"
+            android:text="提交数据" />
 
     </LinearLayout>
 </ScrollView>

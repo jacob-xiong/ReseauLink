@@ -18,6 +18,7 @@ import com.lzy.imagepicker.ImagePicker;
 import com.lzy.imagepicker.bean.ImageItem;
 import com.lzy.imagepicker.ui.ImageGridActivity;
 import com.reseau.link.R;
+import com.reseau.link.client.ApiHost;
 import com.reseau.link.mvp.data.ResultData;
 import com.reseau.link.mvp.data.TestData;
 import com.reseau.link.mvp.presenter.TestPresenter;
@@ -27,14 +28,25 @@ import com.reseau.link.utils.FileUtils;
 import com.reseau.link.utils.ImgUtils;
 import com.reseau.link.utils.LoadImageUtil;
 import com.reseau.link.utils.MyToast;
+import com.reseau.link.utils.NovateUtils.NovateUtils;
 import com.reseau.link.widget.SelectedDialogFragment;
+import com.tamic.novate.Throwable;
+import com.tamic.novate.callback.RxStringCallback;
+import com.tamic.novate.download.UpLoadCallback;
+import com.tamic.novate.request.NovateRequestBody;
+import com.tamic.novate.util.LogWraper;
+import com.tamic.novate.util.Utils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import static com.reseau.link.utils.Constant.REQUEST_PICTURE;
 
@@ -57,6 +69,9 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
     ArrayList<ImageItem> images = null;
     private String[] array;
     private SelectedDialogFragment selectedDialogFragment;
+    @BindView(R.id.up_load_button)
+    Button upLoadBt;
+    private String mPath;
 
     @Override
     protected int setLayoutId() {
@@ -110,8 +125,9 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
         System.out.println("----------------------" + msg);
     }
 
+
     @Override
-    public void loadFailure(Throwable throwable) {
+    public void loadFailure(java.lang.Throwable throwable) {
 
     }
 
@@ -120,18 +136,72 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
 
     }
 
-    @OnClick({R.id.show_selected_dialog,})
+    @OnClick({R.id.show_selected_dialog, R.id.up_load_button, R.id.submit_button})
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.show_selected_dialog:
                 showSelectedDialog();
                 break;
+            case R.id.up_load_button:
+                upLoadFile();
+                break;
+            case R.id.submit_button:
+                presenter.testLogin(1);
+                break;
 
             default:
                 super.onClick(v);
                 break;
         }
+    }
+
+    private void upLoadFile() {
+        File file = new File(mPath);
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data; charset=utf-8"), file);
+        final NovateRequestBody requestBody = Utils.createNovateRequestBody(requestFile, new UpLoadCallback() {
+
+            @Override
+            public void onProgress(Object tag, int progress, long speed, boolean done) {
+
+                LogWraper.d("uplaod", "tag:" + tag.toString() + "progress:" + progress);
+//                updateProgressDialog(progress);
+            }
+        });
+
+
+        MultipartBody.Part body2 =
+                MultipartBody.Part.createFormData("image", file.getName(), requestBody);
+
+        NovateUtils.getIntance(this).RxUploadWithPart(ApiHost.getUpLoadUrl(), body2, new RxStringCallback() {
+
+            @Override
+            public void onStart(Object tag) {
+                super.onStart(tag);
+//                showPressDialog();
+            }
+
+            @Override
+            public void onError(Object tag, Throwable e) {
+                MyToast.showShort(TestActivity.this, e.getMessage());
+//                dismissProgressDialog();
+            }
+
+            @Override
+            public void onCancel(Object tag, Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object tag, String response) {
+                LogWraper.d(response);
+                MyToast.showShort(TestActivity.this, "成功");
+//                dismissProgressDialog();
+            }
+
+
+        });
+
     }
 
 
@@ -157,7 +227,7 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
                         mSelectedImgView.addView(imageView);
                     }
                     setSelectedPathStr("");
-
+                    mPath = selectedItemArrayList.get(0).path;
                 } else {
                     MyToast.showShort(this, "没有数据");
                 }
@@ -170,6 +240,7 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
                     for (String path : list) {
                         str = path + "\n";
                     }
+                    mPath = list.get(0);
                     setSelectedPathStr(str);
                 } else {
                     MyToast.showShort(this, "没有数据");
@@ -182,6 +253,7 @@ public class TestActivity extends BaseActivity<TestPresenter> implements TestVie
                     System.out.println("----------------------" + filePath);
                     System.out.println("----------------------" + uri);
                     setSelectedPathStr(filePath);
+                    mPath = filePath;
                 } else {
                     MyToast.showShort(this, "没有数据");
                 }

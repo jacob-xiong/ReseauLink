@@ -10,4 +10,11 @@ public class ApiHost {
     public static String getUrlTest() {
         return URL_TEST;
     }
+
+    public static String getUpLoadUrl(){
+        return "demo/TestServlet";
+    }
+    public static String getBaseUrl(){
+        return  "http://10.25.32.231:80/";
+    }
 }

@@ -93,7 +93,9 @@
 -keep class com.android.internal.http.multipart.**{*;}
 -keep class org.apache.**{*;}
 -keep class org.apache.http.conn.**{*;}
+-keep class retrofit2.** {*;}
 
+-dontwarn okhttp3**
 -dontwarn retrofit2.**
 -dontwarn rx.internal.util.**
 -dontwarn okio.**
@@ -114,3 +116,5 @@
 -keep class vi.com.** {*;}
 -dontwarn com.baidu.**
 
+#Novate 网络框架
+-keep class com.tamic.novate.** {*;}
